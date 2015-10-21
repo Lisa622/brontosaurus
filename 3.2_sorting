@@ -1,0 +1,10 @@
+def sortinnerval(a_tuple):
+    x= range(0,len(a_tuple))
+    for i in x:
+        sortedtups=zip(a_tuple[i][1].keys(), sorted(a_tuple[i][1].values(), reverse=True))
+        by_fields = a_tuple[i][0]
+        print "{0}: {1}".format(by_fields, sortedtups)
+        
+    
+mydict = {'US':{'Chicago':1,'NYC':2,'LA':3},'UK':{'London':6,'Manchester':7}, 'BZ':{'Sao Paolo':1,'Brasilia':2}}
+to_sort=mydict.items()
