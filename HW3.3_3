@@ -1,0 +1,64 @@
+def get_platform(useragent):
+    platforms = ['Android',
+                 'BlackBerry',
+                 'Windows NT',
+                 'iPad',
+                 'iPhone',
+                 'iPod',
+                 'Linux',
+                 'Macintosh',
+                 'PLAYSTATION 3']
+    platforms = [x.lower() for x in platforms]
+    platform = False
+    for x in platforms:
+        if x in useragent.lower():
+                platform = x
+    if not platform:
+        platform = 'n/a'
+    return platform
+#creating a dict of dicts with outer key= "by" 
+#input 'number' 'info interested in' 'by: field'
+
+#build outer dict key
+#need a dictionary of outer keys and outer values
+args= "5,platform,country_code"
+number, info, by = args.split(',')
+outerkeydict={'timestamp':0,'platform':1,'referring_url':2,'short_url_cname':3,'long_url':4,
+    'geo_city_name':5, 'country_code':6, 'geo_region':7,'accept_language':8, 'timezone':9}
+
+outer_dict={}
+for line in open('bitly_2.tsv').readlines()[1:]:
+    els = line.split('\t')
+    new = els[outerkeydict[info]]
+    inner_list = []
+    inner_list.append(get_platform(new))
+    outerkey=els[outerkeydict[by]]
+    if outerkey in outer_dict:
+        # append the new value to the existing key
+        outer_dict[outerkey].append(inner_list)
+    else:
+        # create a new key
+        outer_dict[outerkey]=inner_list
+    #find way to do the same for inner dict
+from collections import Iterable    
+def flatten(lis):
+     for item in lis:
+         if isinstance(item, Iterable) and not isinstance(item, basestring):
+             for x in flatten(item):
+                 yield x
+         else:        
+             yield item
+valueset={}
+valueset2 = {}             
+for key, value in outer_dict.items():
+    for i in key:
+        value = list(flatten(value))
+        valueset[key] = set(value)
+        valueset2[key] = value
+
+combined_dict = {}
+for k, v in valueset2.iteritems():
+    combined_dict[k] = dict((i, v.count(i)) for i in v)
+    
+
+    
