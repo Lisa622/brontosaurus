@@ -1,3 +1,19 @@
+import os
+import sys
+
+args = sys.argv[1:]
+number, info, by = args.split(',')
+outerkeydict={'timestamp':0,'platform':1,'referring_url':2,'short_url_cname':3,'long_url':4,
+    'geo_city_name':5, 'country_code':6, 'geo_region':7,'accept_language':8, 'timezone':9}
+
+def validate(number, info, by):
+    if not number.isdigit():
+        sys.exit("First argument should be a number.")
+    if info not in outerkeydict:
+        sys.exit("Second argument should be from this list: {0}".format(outerkeydict.keys()))
+    if by not in outerkeydict:
+        sys.exit("Third argument should be from the following list: {0}".format(outerkeydict.keys()))
+
 def get_platform(useragent):
     platforms = ['Android',
                  'BlackBerry',
@@ -15,37 +31,34 @@ def get_platform(useragent):
     if not platform:
         platform = 'Other'
     return platform
-#creating a dict of dicts with outer key= "by" 
-#input 'number' 'info interested in' 'by: field'
-
-#build outer dict key
-#need a dictionary of outer keys and outer values
-args= "5,platform,country_code"
-number, info, by = args.split(',')
 
 outerkeydict={'timestamp':0,'platform':1,'referring_url':2,'short_url_cname':3,'long_url':4,
     'geo_city_name':5, 'country_code':6, 'geo_region':7,'accept_language':8, 'timezone':9}
 
-outer_dict={}
-for line in open('bitly_2.tsv').readlines()[1:]:
-    els = line.split('\t')
-    if info == 'platform':
-        new = get_platform(els[outerkeydict[info]])
-    else:
-        new = els[outerkeydict[info]]
-    outer_list = []
-    outer_list.append(new)
-    if by == 'platform':
-        outerkey = get_platform(els[outerkeydict[by]])
-    else:
-        outerkey = els[outerkeydict[by]]
-    if outerkey in outer_dict:
-        # append the new value to the existing key
-        outer_dict[outerkey].append(outer_list)
-    else:
-        # create a new key
-        outer_dict[outerkey]=outer_list
-    #find way to do the same for inner dict
+def get_data(number, info, by):
+    outerkeydict={'timestamp':0,'platform':1,'referring_url':2,'short_url_cname':3,'long_url':4,
+    'geo_city_name':5, 'country_code':6, 'geo_region':7,'accept_language':8, 'timezone':9}
+    outer_dict={}
+    for line in open('bitly_2.tsv').readlines()[1:]:
+        els = line.split('\t')
+        if info == 'platform':
+            new = get_platform(els[outerkeydict[info]])
+        else:
+            new = els[outerkeydict[info]]
+        outer_list = []
+        outer_list.append(new)
+        if by == 'platform':
+            outerkey = get_platform(els[outerkeydict[by]])
+        else:
+            outerkey = els[outerkeydict[by]]
+        if outerkey in outer_dict:
+             # append the new value to the existing key
+            outer_dict[outerkey].append(outer_list)
+        else:
+            # create a new key
+            outer_dict[outerkey]=outer_list
+    return outer_dict
+    
 from collections import Iterable    
 def flatten(lis):
      for item in lis:
@@ -54,20 +67,9 @@ def flatten(lis):
                  yield x
          else:        
              yield item
-valueset={}
-valueset2 = {}             
-for key, value in outer_dict.items():
-    for i in key:
-        value = list(flatten(value))
-        valueset[key] = set(value)
-        valueset2[key] = value
 
-combined_dict = {}
-for k, v in valueset2.iteritems():
-    combined_dict[k] = dict((i, v.count(i)) for i in v)
     
 #get the top __ for each key in dict
-
 def sort_innerval(a_dict):
     to_sort=a_dict.items()
     x= range(len(to_sort))
@@ -75,7 +77,23 @@ def sort_innerval(a_dict):
         sortedtups=zip(to_sort[i][1].keys(), sorted(to_sort[i][1].values(), reverse=True))
         print "{0}: {1}".format(to_sort[i][0], sortedtups[:int(number)])
 
-sort_innerval(combined_dict)
+def main():
+    validate(number, info, by)
+    outer_dict = get_data(number, info, by)
+    valueset={}
+    valueset2 = {}             
+    for key, value in outer_dict.items():
+        for i in key:
+            value = list(flatten(value))
+            valueset[key] = set(value)
+            valueset2[key] = value
+    combined_dict = {}
+    for k, v in valueset2.iteritems():
+        combined_dict[k] = dict((i, v.count(i)) for i in v)            
+    sort_innerval(combined_dict)
+
+main()
+    
 
 
 
