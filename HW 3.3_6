@@ -4,7 +4,8 @@ import sys
 args = sys.argv[1:]
 number, info, by = args.split(',')
 
-#create a dictionary to refer to for which elements of the lines to read depending on what the user wants to see. Every key is associated with an index of where that data is found in the bit.ly file
+#create a dictionary to refer to for which elements of the lines to read depending on what the user 
+#wants to see. Every key is associated with an index of where that data is found in the bit.ly file
 outerkeydict={'timestamp':0,'platform':1,'referring_url':2,'short_url_cname':3,'long_url':4,
     'geo_city_name':5, 'country_code':6, 'geo_region':7,'accept_language':8, 'timezone':9}
 
@@ -16,7 +17,8 @@ def validate(number, info, by):
     if by not in outerkeydict:
         sys.exit("Third argument should be from the following list: {0}".format(outerkeydict.keys()))
 
-#A list of all possible platforms so we can loop through to see if any part of the long strings of the 'user_agent' match with each of these. If so, this function will return the platform 
+#A list of all possible platforms so we can loop through to see if any part of the long strings of 
+#the 'user_agent' match with each of these. If so, this function will return the platform 
 def get_platform(useragent):
     platforms = ['Android',
                  'BlackBerry',
@@ -29,7 +31,8 @@ def get_platform(useragent):
                  'PLAYSTATION 3']
     platform = False
     for x in platforms:
-        if x.lower() in useragent.lower():  #checks to see if the platform string is found in the string of useragent. comparing lowercase versions of both
+        if x.lower() in useragent.lower():  #checks to see if the platform string is found in the 
+                                        #string of useragent. comparing lowercase versions of both
                 platform = x
     if not platform:
         platform = 'Other' #if no match is found amongst platform list, then platform will be other.  This function is only called if 'platform' is an arg, so this is OK.
@@ -53,13 +56,15 @@ def get_data(number, info, by):
         else:
             outerkey = els[outerkeydict[by]]  #otherwise, the outer keys of the dict is just the elements from the corresponding index the user asked for
         if outerkey in outer_dict:
-            outer_dict[outerkey].append(outer_list) #as we go through every line in the file, we are checking if outer key has been added to the dict yet.  If it has been already, then we append the new value to the list of values (second arg).
+            outer_dict[outerkey].append(outer_list) #as we go through every line in the file, we are checking if 
+            #outer key has been added to the dict yet.  If it has been already, then we append the new value to the list of values (second arg).
         else:
             outer_dict[outerkey]=outer_list #if the outerkey does not exist yet, then we add it to the dict
     return outer_dict
     
 from collections import Iterable    
-def flatten(a_list):  #I needed a way to flatten the intermediate dictionary I just created because every value was its own list.  So this func takes all the single-element lists and makes it into one list
+def flatten(a_list):  #I needed a way to flatten the intermediate dictionary I just created because every value was its own list.  
+    #So this func takes all the single-element lists and makes it into one list
      for item in a_list:
          if isinstance(item, Iterable) and not isinstance(item, basestring):
              for x in flatten(item):
