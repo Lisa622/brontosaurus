@@ -1,0 +1,48 @@
+class Logger(object):
+    def __init__(self, file, priority, datetime, scriptname):
+        self.file=file
+        self.priority=priority
+        self.datetime=datetime
+        self.scriptname=scriptname
+        try:
+            fh = open(self.file, 'a')
+        except IOError:
+            return None
+        self.handle = fh
+    
+    priorities = {
+        'DEBUG': 1,
+        'INFO': 2,
+        'WARNING': 3,
+        'ERROR': 4,
+        'CRITICAL': 5
+    }        
+    log_ling_spacer = '    '
+    
+    class Write(object):
+        def write_log(self, msg, priority):
+            self.handle.write(msg+'\n')
+            #and writes the message with priorities lower
+            
+    class debug(Write):
+           def debug(self, msg):
+               self.write_log(msg,1)
+               
+    class info(Write):
+           def info(self, msg):
+               self.write_log(msg,2)
+               
+    class warning(Write):
+           def warning(self, msg):
+               self.write_log(msg,3)
+               
+    class error(Write):
+           def error(self, msg):
+               self.write_log(msg,4)
+               
+    class critical(Write):
+           def critical(self, msg):
+               self.write_log(msg,5)
+        
+        
+        
