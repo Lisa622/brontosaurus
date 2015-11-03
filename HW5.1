@@ -1,0 +1,21 @@
+class PersistDict(dict):
+    def __init__(self, filename):
+        self.filename = filename
+        if os.path.isfile:
+            self.dict = {}
+            with open(filename) as myfile:
+                (key, val) = line.split('=')
+                self.dict[key] = val
+                return self.dict
+    
+    def __setitem__(self, key, value):
+        dict.__setitem__(key, value)
+        with open ('filename', 'a') as myfile:
+            myfile.write("{0} = {1}".format(key, value)
+            
+    def __delitem__(self, key):
+        dict.__delitem__(self, key)
+        with open ('filename', 'w') as myfile:
+            for key in self.dict:
+                myfile.write("{0} = {1}".format(key, self.dict[key])
+        
